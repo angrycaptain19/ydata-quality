@@ -60,8 +60,8 @@ def baseline_predictions(df: pd.DataFrame, label: str, task='classification'):
     model = BASELINE_CLASSIFIER if task == 'classification' else BASELINE_REGRESSION
 
     # 2. Train overall model
-    x, y = df.drop(label, axis=1), label_binarize(df[label], classes=list(set(df[label])))
-    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.3, random_state=42)
+    x_orig, y_orig = df.drop(label, axis=1), label_binarize(df[label], classes=list(set(df[label])))
+    x_train, x_test, y_train, y_test = train_test_split(x_orig, y_orig, test_size=0.3, random_state=42)
     model.fit(x_train.select_dtypes('number'), y_train)
 
     # 3. Predict
@@ -136,13 +136,13 @@ def performance_per_feature_values(df: pd.DataFrame, feature: str, label: str, t
     # 3. Get the performances per feature value
     uniques = set(x_test[feature])
     results = {}
-    for i in uniques:  # for each category
-        y_pred_cat = y_pred[x_test[feature] == i]
-        y_true_cat = y_test[x_test[feature] == i]
+    for value in uniques:  # for each category
+        y_pred_cat = y_pred[x_test[feature] == value]
+        y_true_cat = y_test[x_test[feature] == value]
         try:
-            results[i] = metric(y_true_cat, y_pred_cat)
-        except Exception as exc:
-            results[i] = f'[ERROR] Failed performance metric with message: {exc}'
+            results[value] = metric(y_true_cat, y_pred_cat)
+        except ValueError as exc:
+            results[value] = f'[ERROR] Failed performance metric with message: {exc}'
 
     return results
 
@@ -181,8 +181,8 @@ def predict_missingness(df: pd.DataFrame, feature: str):
     df[target] = df[feature].isna()
 
     # 3. Train overall model
-    X, y = df.drop([feature, target], axis=1), df[target]
-    x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+    x_orig, y_orig = df.drop([feature, target], axis=1), df[target]
+    x_train, x_test, y_train, y_test = train_test_split(x_orig, y_orig, test_size=0.3, random_state=42)
     model.fit(x_train.select_dtypes('number'), y_train)
 
     # 4. Predict
@@ -193,11 +193,13 @@ def predict_missingness(df: pd.DataFrame, feature: str):
 
 
 def standard_transform(df, dtypes, skip=[], robust=False):
-    """Applies standard transformation to the dataset (imputation, centering and scaling), returns transformed data and the fitted transformer.
+    """Applies standard transformation to the dataset (imputation, centering and scaling), returns transformed data
+    and the fitted transformer.
     Numerical data is imputed with mean, centered and scaled by 4 standard deviations.
     Categorical data is imputed with mode. Encoding is not performed in this stage to preserve the same columns.
     If robust is passed as True, will truncate  numerical data before computing statistics.
-    [1]From 1997 Wilson, D. Randall; Martinez, Tony R. - Improved Heterogeneous Distance Functions https://arxiv.org/pdf/cs/9701101.pdf
+    [1]From 1997 Wilson, D. Randall; Martinez, Tony R. -
+        Improved Heterogeneous Distance Functions https://arxiv.org/pdf/cs/9701101.pdf
     """
     numerical_features = [key for key, value in dtypes.items() if value == 'numerical' and key not in skip]
     categorical_features = [key for key, value in dtypes.items() if value == 'categorical' and key not in skip]
@@ -231,12 +233,12 @@ def performance_one_vs_rest(df: pd.DataFrame, label_feat: str, _class: str, dtyp
         dtypes = infer_dtypes(df)
     categorical_features = [key for key, value in dtypes.items() if value == 'categorical' and key != label_feat]
     preprocessor = ColumnTransformer(
-        transformers=[('cat', CATEGORICAL_TRANSFORMER, categorical_features)])  # One hot encode categorical variables (except label)
+        transformers=[('cat', CATEGORICAL_TRANSFORMER, categorical_features)])  # OHE categorical variables
     model = Pipeline([('preprocessing', preprocessor), ('classifier', LogisticRegression())])
 
     # 2. Train overall model
-    X, y = df.drop(label_feat, axis=1), label_binarize(df[label_feat], classes=[_class]).squeeze()
-    x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=24)
+    x_orig, y_orig = df.drop(label_feat, axis=1), label_binarize(df[label_feat], classes=[_class]).squeeze()
+    x_train, x_test, y_train, y_test = train_test_split(x_orig, y_orig, test_size=0.3, random_state=24)
     model.fit(x_train, y_train)
 
     # 3. Predict
@@ -250,27 +252,28 @@ def estimate_centroid(df: pd.DataFrame, dtypes: dict = None):
     """Makes a centroid estimation for a given dataframe.
     Will use provided dtypes or infer in order to use best statistic columnwise"""
     if dtypes:
-        if not all([col in dtypes for col in df.columns]):
+        if not all((col in dtypes for col in df.columns)):
             dtypes = dtypes.update(infer_dtypes(df, skip=dtypes.columns))
     else:
         dtypes = infer_dtypes(df)
     centroid = pd.Series(df.iloc[0])
+    statistic = lambda col: lambda x: pd.Series.mean(x) if dtypes[col] == 'numerical' else pd.Series.mode(x)[0]
     for col in centroid.index:
-        statistic = lambda x: pd.Series.mean(x) if dtypes[col] == 'numerical' else pd.Series.mode(x)[0]
         centroid[col] = statistic(df[col])
     return centroid
 
 
-def heom(x: pd.DataFrame, y, dtypes):
+def heom(x_df: pd.DataFrame, y_df, dtypes):
     """Implements the Heterogeneous Euclidean-Overlap Metric between a sample x and a reference y.
     The data is assumed to already be preprocessed (normalized and imputed).
-    [1]From 1997 Wilson, D. Randall; Martinez, Tony R. - Improved Heterogeneous Distance Functions https://arxiv.org/pdf/cs/9701101.pdf
+    [1]From 1997 Wilson, D. Randall; Martinez, Tony R. -
+        Improved Heterogeneous Distance Functions https://arxiv.org/pdf/cs/9701101.pdf
     """
-    distances = pd.DataFrame(np.empty(x.shape), index=x.index, columns=x.columns)
+    distances = pd.DataFrame(np.empty(x_df.shape), index=x_df.index, columns=x_df.columns)
     distance_funcs = {'categorical': lambda x, y: 0 if x == y else 1,
-                      'numerical': lambda x, y: abs(x - y)}  # Note, here we are assuming the data to be previously scaled
-    for i, column in enumerate(distances.columns):
-        distances[column] = x[column].apply(distance_funcs[dtypes[column]], args=[y[i]])
+                      'numerical': lambda x, y: abs(x - y)}  # Here we are assuming the data to be previously scaled
+    for col_idx, column in enumerate(distances.columns):
+        distances[column] = x_df[column].apply(distance_funcs[dtypes[column]], args=[y_df[col_idx]])
     return distances
 
 
@@ -283,7 +286,7 @@ def estimate_sd(sample: pd.DataFrame, reference=None, dtypes=None):
         std_distances: the distances of the sample points to the reference point scaled by std_dev
     """
     if dtypes:  # Ensure dtypes are compatible with sample
-        if not all([col in dtypes for col in sample.columns]):
+        if not all((col in dtypes for col in sample.columns)):
             dtypes = dtypes.update(infer_dtypes(sample, skip=dtypes.columns))
     else:
         dtypes = infer_dtypes(sample)
@@ -292,15 +295,14 @@ def estimate_sd(sample: pd.DataFrame, reference=None, dtypes=None):
     else:
         assert len(reference) == len(
             sample.columns), "The provided reference point does not have the same dimension as the sample records"
-    distances = heom(x=sample, y=reference, dtypes=dtypes)
+    distances = heom(x_df=sample, y_df=reference, dtypes=dtypes)
     euclidean_distances = (distances.apply(np.square).sum(axis=1) / len(sample.columns)).apply(np.sqrt)
     std_dev = np.std(euclidean_distances)
     std_distances = euclidean_distances / std_dev
     return std_dev, std_distances
 
 
-# pylint: disable=invalid-name
-def GMM_clustering(data, n_gaussians):
+def gmm_clustering(data, n_gaussians):
     """Produces a GMM model with n_gaussians to cluster provided data."""
     gmm_ = GaussianMixture(n_components=n_gaussians).fit(data)
     return gmm_.predict(data), gmm_.aic(data)
@@ -326,7 +328,7 @@ def normality_test(data, suite='full', p_th=5e-3):
         try:
             transformed_data = transforms[transform](data)
             _, p_stat = normaltest(transformed_data, nan_policy='raise')
-        except BaseException:
+        except (AttributeError, TypeError, ZeroDivisionError, ValueError):
             continue
         if p_stat > p_th:
             return True, transform, p_stat

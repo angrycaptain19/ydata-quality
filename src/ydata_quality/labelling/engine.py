@@ -7,7 +7,7 @@ from pandas import DataFrame, Series
 
 from ..core import QualityEngine, QualityWarning
 from ..utils.auxiliary import infer_dtypes
-from ..utils.modelling import (GMM_clustering,
+from ..utils.modelling import (gmm_clustering,
                                estimate_centroid,
                                estimate_sd,
                                normality_test,
@@ -263,7 +263,7 @@ class NumericalLabelInspector(SharedLabelInspector):
         AICs = [None for k in search_space]
         labels = {k: None for k in search_space}
         for i, k in enumerate(search_space):
-            labels[k], AICs[i] = GMM_clustering(sorted_vals.values.reshape(-1, 1), k)
+            labels[k], AICs[i] = gmm_clustering(sorted_vals.values.reshape(-1, 1), k)
         ideal_k = list(labels.keys())[AICs.index(min(AICs))]
         return Series(labels[ideal_k], index=sorted_vals.index)
 
