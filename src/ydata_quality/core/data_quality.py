@@ -13,7 +13,7 @@ from ..data_relations import DataRelationsDetector
 from ..duplicates import DuplicateChecker
 from ..drift import DriftAnalyser
 from ..erroneous_data import ErroneousDataIdentifier
-from ..labelling import LabelInspector
+from ..labelling import label_inspector_dispatch
 from ..missings import MissingsProfiler
 from ..utils.logger import get_logger, NAME
 
@@ -100,7 +100,7 @@ class DataQuality:
 
         # Engines based on mandatory arguments
         if label is not None:
-            self._engines_legacy['labelling'] = LabelInspector(df=df, label=label,
+            self._engines_legacy['labelling'] = label_inspector_dispatch(df=df, label=label,
                                                                random_state=self.random_state, severity=severity)
         else:
             self._logger.warning('Label is not defined. Skipping LABELLING engine.')

@@ -15,7 +15,7 @@ from ..utils.modelling import (gmm_clustering,
                                standard_transform)
 
 
-def LabelInspector(df, label, random_state: Optional[int] = None, severity: Optional[str] = None):
+def label_inspector_dispatch(df, label, random_state: Optional[int] = None, severity: Optional[str] = None):
     """Runs a label type inference to instantiate the correct label inspector.
     Instantiate this label inspector method to create a Label Inspector.
 
