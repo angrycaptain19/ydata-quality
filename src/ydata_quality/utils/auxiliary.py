@@ -90,6 +90,13 @@ def find_duplicate_columns(df: pd.DataFrame, is_close=False) -> dict:
     return dups
 
 
+def drop_column_list(df: pd.DataFrame, column_list: dict):
+    "Drops from a DataFrame a duplicates mapping of columns to duplicate lists. Works inplace."
+    for col, dup_list in column_list.items():
+        if col in df.columns:  # Ensures we will not drop both members of duplicate pairs
+            df.drop(columns=dup_list, index=dup_list, inplace=True)
+
+
 def infer_dtypes(df: Union[pd.DataFrame, pd.Series], skip: Union[list, set] = []):
     """Simple inference method to return a dictionary with list of numeric_features and categorical_features
     Note: The objective is not to substitute the need for passed dtypes but rather to provide expedite inferal between

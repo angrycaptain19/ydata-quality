@@ -8,6 +8,7 @@ from pandas import DataFrame, Series
 
 from ..core import QualityEngine, QualityWarning
 from ..utils.modelling import baseline_performance, performance_per_missing_value, predict_missingness
+from ..utils.correlations import filter_associations
 
 
 class MissingsProfiler(QualityEngine):
@@ -76,26 +77,14 @@ class MissingsProfiler(QualityEngine):
     def missing_correlations(self):
         """Calculate the correlations between missing values in feature values.
 
-        # TODO: Replace standard correlation coefficient by Cramer's V / Theil's U.
+        # TODO: Replace standard correlation coefficient by Cramer's V / Theil's U + pass name in filter_associations call in high_missing_correlations.
         """
         nulls = self.df.loc[:, self.null_count(minimal=False) > 0]  # drop columns without nulls
         return nulls.isnull().corr()
 
     def high_missing_correlations(self, th: float = 0.5):
         "Returns a list of correlation pairs with high correlation of missing values."
-
-        corrs = self.missing_correlations().abs()        # compute the absolute correlation
-        np.fill_diagonal(corrs.values, -1)               # remove the same column pairs
-        corrs = corrs[corrs > th].melt(ignore_index=False).reset_index().dropna()  # subset by threshold
-
-        # TODO: For acyclical correlation measures (e.g. Theil's U), store direction as well
-
-        # create the sorted pairs of feature names
-        corrs['features'] = ['_'.join(sorted((i.index, i.variable))) for i in corrs.itertuples()]
-        corrs.drop_duplicates('features', inplace=True)  # deduplicate combination pairs
-        corrs.sort_values(by='value', ascending=False, inplace=True)  # sort by correlation
-        corrs = corrs.set_index('features').rename(columns={'value': 'missings_corr'})[
-            ['missings_corr']].squeeze()  # rename and subset columns
+        corrs = filter_associations(self.missing_correlations(), th)
 
         if len(corrs) > 0:
             self.store_warning(

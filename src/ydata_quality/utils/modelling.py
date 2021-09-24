@@ -1,6 +1,7 @@
 """
 Utilities based on building baseline machine learning models.
 """
+from typing import Union
 
 import numpy as np
 import pandas as pd
@@ -44,7 +45,6 @@ ORDINAL_TRANSFORMER = None  # Not implemented
 
 def get_prediction_task(df: pd.DataFrame, label: str):
     "Heuristics to infer prediction task (classification/regression)."
-    # TODO: Improve prediction type guesstimate based on alternative heuristics (e.g. dtypes, value_counts)
 
     return 'classification' if len(set(df[label])) == 2 else 'regression'
 
@@ -248,6 +248,11 @@ def performance_one_vs_rest(df: pd.DataFrame, label_feat: str, _class: str, dtyp
     return roc_auc_score(y_test, y_pred)
 
 
+def center_of_mass_statistic(column: pd.Series, col_dtype: str) -> Union[float, int, str]:
+    "Returns a center of mass statistic of a column based on its dtype."
+    return column.mean() if col_dtype == 'numerical' else column.mode()[0]  # only first mode
+
+
 def estimate_centroid(df: pd.DataFrame, dtypes: dict = None):
     """Makes a centroid estimation for a given dataframe.
     Will use provided dtypes or infer in order to use best statistic columnwise"""
@@ -257,9 +262,8 @@ def estimate_centroid(df: pd.DataFrame, dtypes: dict = None):
     else:
         dtypes = infer_dtypes(df)
     centroid = pd.Series(df.iloc[0])
-    statistic = lambda col: lambda x: pd.Series.mean(x) if dtypes[col] == 'numerical' else pd.Series.mode(x)[0]
     for col in centroid.index:
-        centroid[col] = statistic(df[col])
+        centroid[col] = center_of_mass_statistic(df[col], dtypes[col])
     return centroid
 
 
