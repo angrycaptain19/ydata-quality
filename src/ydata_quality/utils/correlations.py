@@ -99,7 +99,6 @@ def correlation_matrix(df: DataFrame, dtypes: dict, drop_dups: bool = False) -> 
         ('categorical', 'numerical'): correlation_ratio,
         ('numerical', 'numerical'): pearson_correlation,
     }
-    # TODO: p-values for every correlation function, to support Data Relations logic
     corr_mat = DataFrame(data=np.identity(n=len(df.columns)), index=df.columns, columns=df.columns)
     p_vals = DataFrame(data=np.ones(shape=corr_mat.shape), index=df.columns, columns=df.columns)
     has_values = df.notnull().values

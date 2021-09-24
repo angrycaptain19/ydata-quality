@@ -2,7 +2,7 @@
 Auxiliary utility methods, IO, processing, etc.
 """
 
-from typing import Union, Tuple
+from typing import Union, Tuple, Optional
 import json
 
 import pandas as pd
@@ -12,7 +12,7 @@ from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from .enum import DataFrameType
 
 
-def test_load_json_path(json_path: str) -> dict:
+def test_load_json_path(json_path: str, encoding: Optional[str] = None) -> dict:
     """Tests file existence from given path and attempts to parse as a json dictionary.
 
     Args:
@@ -21,8 +21,7 @@ def test_load_json_path(json_path: str) -> dict:
         json_dict (dict): The json dictionary loaded as Python dictionary.
     """
     if isinstance(json_path, str):
-        # pylint: disable=unspecified-encoding
-        with open(json_path, 'r') as b_stream:
+        with open(json_path, 'r', encoding=encoding) as b_stream:
             data = b_stream.read()
         json_dict = json.loads(data)
     else:
