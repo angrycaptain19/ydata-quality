@@ -188,9 +188,8 @@ class CategoricalLabelInspector(SharedLabelInspector):
                 QualityWarning(
                     test='One vs Rest Performance', category='Labels', priority=2,
                     data=Series(poor_performers),
-                    description="Classes {} performed under the {:.1%} AUROC threshold. \
-The threshold was defined as an average of all classifiers with {:.0%} slack.".format(
-                        set(poor_performers.keys()), threshold, slack)
+                    description=f"Classes {set(poor_performers.keys())} performed under the {threshold:.1%} AUROC \
+threshold. The threshold was defined as an average of all classifiers with {slack:.0%} slack."
                 ))
         return Series(results)
 
@@ -293,7 +292,7 @@ class NumericalLabelInspector(SharedLabelInspector):
                 potential_outliers[cluster] = cluster_outliers
         if len(potential_outliers) > 0:
             total_outliers = sum([cluster_outliers.shape[0] for cluster_outliers in potential_outliers.values()])
-            coverage_string = "{} clusters".format(len(clusters)) if use_clusters else "the full dataset"
+            coverage_string = f"{len(clusters)} clusters" if use_clusters else "the full dataset"
             self.store_warning(
                 QualityWarning(
                     test='Outlier Detection', category='Labels', priority=2, data=potential_outliers,

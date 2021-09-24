@@ -202,7 +202,7 @@ with expected count below 5 (this sample is too small for chi-squared test)"
             covariates.drop(self.label, axis=1, inplace=True)
             holdout.drop(self.label, axis=1, inplace=True)
         leftover_fractions = np.arange(0.2, 1.2, 0.2)
-        perc_index = ["{0:.0%}".format(fraction) for fraction in leftover_fractions]
+        perc_index = [f"{fraction:.0%}" for fraction in leftover_fractions]
         control_metric = Series(index=perc_index, dtype=str)
         bonferroni_p = p_thresh / len(covariates.columns)  # Bonferroni correction
         all_p_vals = DataFrame(index=perc_index, columns=covariates.columns)
@@ -241,7 +241,7 @@ with expected count below 5 (this sample is too small for chi-squared test)"
         labels = self._remaining_data[self.label].copy()
         holdout = self._holdout[self.label]
         leftover_fractions = np.arange(0.2, 1.2, 0.2)
-        p_values = DataFrame(index=["{:.0%}".format(fraction) for fraction in leftover_fractions],
+        p_values = DataFrame(index=[f"{fraction:.0%}" for fraction in leftover_fractions],
                              columns=['Label p-value', 'p-value threshold'])
         for idx, fraction in enumerate(leftover_fractions):
             downsample, _ = random_split(labels, fraction, random_state=self.random_state)
@@ -322,9 +322,8 @@ the defined label column. Test skipped."
             self.store_warning(
                 QualityWarning(
                     test='Sample label drift', category='Sampling', priority=2, data=test_summary,
-                    description="The label accused drift in the sample test with a p-test of {:.4f}, which is under \
-the threshold {:.2f}. The test sample labels do not appear to be representative of the reference sample.".format(
-                        p_val, p_thresh)
+                    description=f"The label accused drift in the sample test with a p-test of {p_val:.4f}, which is \
+under the threshold {p_thresh:.2f}. The test sample labels do not appear to be representative of the reference sample."
                 ))
         elif test_summary['Verdict'] == 'Invalid test':
             self.store_warning(
@@ -362,10 +361,9 @@ Test skipped."
             self.store_warning(
                 QualityWarning(
                     test='Concept drift', category='Sampling', priority=2, data=test_summary,
-                    description="There was concept drift detected with a p-test of {:.4f}, which is under the \
-threshold {:.2f}. The model's predicted labels for the test sample do not appear to be representative of the \
-distribution of labels predicted for the reference sample.".format(
-                        p_val, p_thresh)
+                    description=f"There was concept drift detected with a p-test of {p_val:.4f}, which is under the \
+threshold {p_thresh:.2f}. The model's predicted labels for the test sample do not appear to be representative of the \
+distribution of labels predicted for the reference sample."
                 ))
         elif test_summary['Verdict'] == 'Invalid test':
             self.store_warning(
