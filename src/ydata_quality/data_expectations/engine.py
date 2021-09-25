@@ -8,7 +8,7 @@ from pandas import DataFrame
 
 from ..core import QualityEngine, QualityWarning
 from ..utils.auxiliary import test_load_json_path
-from ..utils.logger import get_logger, NAME
+from ..utils.logger import NAME, get_logger
 
 
 class DataExpectationsReporter(QualityEngine):

@@ -1,17 +1,14 @@
 """
 Implementation of LabelInspector engine class to run label quality analysis.
 """
-from typing import Union, Optional
+from typing import Optional, Union
 
 from pandas import DataFrame, Series
 
 from ..core import QualityEngine, QualityWarning
 from ..utils.auxiliary import infer_dtypes
-from ..utils.modelling import (gmm_clustering,
-                               estimate_centroid,
-                               estimate_sd,
-                               normality_test,
-                               performance_one_vs_rest,
+from ..utils.modelling import (estimate_centroid, estimate_sd, gmm_clustering,
+                               normality_test, performance_one_vs_rest,
                                standard_transform)
 
 

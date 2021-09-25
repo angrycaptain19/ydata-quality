@@ -5,7 +5,6 @@ from typing import Callable, Optional, Tuple, Union
 
 import matplotlib.pyplot as plt
 import numpy as np
-
 from pandas import DataFrame, Series
 from scipy.stats import ks_2samp
 from scipy.stats._continuous_distns import chi2_gen

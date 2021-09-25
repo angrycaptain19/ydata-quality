@@ -2,12 +2,12 @@
 Auxiliary utility methods, IO, processing, etc.
 """
 
-from typing import Union, Tuple, Optional
 import json
+from typing import Optional, Tuple, Union
 
-import pandas as pd
 import numpy as np
-from sklearn.preprocessing import StandardScaler, MinMaxScaler
+import pandas as pd
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
 from .enum import DataFrameType
 

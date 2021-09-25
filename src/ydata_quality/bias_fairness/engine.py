@@ -9,7 +9,8 @@ from dython.nominal import compute_associations
 
 from ..core import QualityEngine, QualityWarning
 from ..utils.correlations import filter_associations
-from ..utils.modelling import baseline_performance, performance_per_feature_values
+from ..utils.modelling import (baseline_performance,
+                               performance_per_feature_values)
 
 
 class BiasFairness(QualityEngine):

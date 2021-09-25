@@ -5,7 +5,7 @@ from typing import Union
 
 import numpy as np
 import pandas as pd
-from scipy.stats import boxcox, normaltest, mode
+from scipy.stats import boxcox, mode, normaltest
 from sklearn.compose import ColumnTransformer
 from sklearn.exceptions import ConvergenceWarning, DataConversionWarning
 from sklearn.impute import SimpleImputer
@@ -19,8 +19,8 @@ from sklearn.preprocessing import (FunctionTransformer, OneHotEncoder,
                                    label_binarize)
 from sklearn.utils._testing import ignore_warnings
 
-from .enum import PredictionTask
 from .auxiliary import infer_dtypes
+from .enum import PredictionTask
 
 BASELINE_CLASSIFIER = Pipeline([
     ('imputer', SimpleImputer()),

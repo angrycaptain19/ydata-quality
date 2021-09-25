@@ -7,10 +7,9 @@ from pandas import DataFrame, Series
 
 from ..core import QualityEngine, QualityWarning
 from ..utils.correlations import filter_associations
-from ..utils.modelling import (baseline_performance,
+from ..utils.modelling import (baseline_performance, get_prediction_task,
                                performance_per_missing_value,
-                               predict_missingness,
-                               get_prediction_task)
+                               predict_missingness)
 
 
 class MissingsProfiler(QualityEngine):

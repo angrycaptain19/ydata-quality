@@ -1,9 +1,9 @@
 "Data Quality logger functions"
 import logging
-from typing import TextIO
-import sys
 import os
+import sys
 from logging import _nameToLevel
+from typing import TextIO
 
 # Default vars for the logger
 NAME = os.getenv('DQ_LOGGER_NAME', 'DQ_Logger')

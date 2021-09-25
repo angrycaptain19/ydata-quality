@@ -6,16 +6,16 @@ from typing import Callable, List, Optional, Union
 
 from pandas import DataFrame
 
-from .warnings import Priority, QualityWarning, WarningStyling
 from ..bias_fairness import BiasFairness
 from ..data_expectations import DataExpectationsReporter
 from ..data_relations import DataRelationsDetector
-from ..duplicates import DuplicateChecker
 from ..drift import DriftAnalyser
+from ..duplicates import DuplicateChecker
 from ..erroneous_data import ErroneousDataIdentifier
 from ..labelling import label_inspector_dispatch
 from ..missings import MissingsProfiler
-from ..utils.logger import get_logger, NAME
+from ..utils.logger import NAME, get_logger
+from .warnings import Priority, QualityWarning, WarningStyling
 
 
 # pylint: disable=too-many-locals

@@ -8,9 +8,9 @@ from typing import Optional
 from numpy import random
 from pandas import DataFrame
 
-from .warnings import Priority, QualityWarning, WarningStyling
 from ..utils.auxiliary import infer_df_type, infer_dtypes
-from ..utils.logger import get_logger, NAME
+from ..utils.logger import NAME, get_logger
+from .warnings import Priority, QualityWarning, WarningStyling
 
 
 # pylint: disable=too-many-instance-attributes

@@ -2,19 +2,20 @@
 Utilities for feature correlations.
 """
 
+import warnings
 from itertools import combinations
 from typing import List, Optional
-import warnings
 
-import numpy as np
-from pandas import DataFrame, Series, crosstab
-import scipy.stats as ss
-from scipy.stats.distributions import chi2
-from statsmodels.stats.outliers_influence import variance_inflation_factor as vif
-import seaborn as sb
 import matplotlib.pyplot as plt
+import numpy as np
+import scipy.stats as ss
+import seaborn as sb
+from pandas import DataFrame, Series, crosstab
+from scipy.stats.distributions import chi2
+from statsmodels.stats.outliers_influence import \
+    variance_inflation_factor as vif
 
-from .auxiliary import find_duplicate_columns, drop_column_list
+from .auxiliary import drop_column_list, find_duplicate_columns
 
 
 def filter_associations(corrs: DataFrame, th: float,

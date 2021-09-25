@@ -1,19 +1,17 @@
 """
 Implementation of DataRelationsDetector engine to run data relations analysis.
 """
-from typing import Optional, Tuple, List
+from typing import List, Optional, Tuple
 
 import numpy as np
 from pandas import DataFrame
 
 from ..core import QualityEngine, QualityWarning
-from ..utils.correlations import (correlation_matrix,
-                                  partial_correlation_matrix,
-                                  correlation_plotter,
-                                  vif_collinearity,
-                                  chi2_collinearity)
 from ..utils.auxiliary import infer_dtypes, standard_normalize
-from ..utils.logger import get_logger, NAME
+from ..utils.correlations import (chi2_collinearity, correlation_matrix,
+                                  correlation_plotter,
+                                  partial_correlation_matrix, vif_collinearity)
+from ..utils.logger import NAME, get_logger
 
 
 class DataRelationsDetector(QualityEngine):
