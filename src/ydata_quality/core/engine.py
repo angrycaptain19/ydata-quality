@@ -161,9 +161,8 @@ class QualityEngine(ABC):
                 results[test] = getattr(self, test)()
             # pylint: disable=broad-except
             except Exception as exc:  # print a Warning and log the message
-                self._logger.warning(
-                    'Skipping %s due to failure during computation. \
-                        See results folder of this test for further details.', test)
+                self._logger.warning('Skipping %s due to failure during computation. \
+See results folder of this test for further details.', test)
                 results[test] = "[ERROR] Test failed to compute. Original exception: "+f"{exc}"
 
         if summary:
