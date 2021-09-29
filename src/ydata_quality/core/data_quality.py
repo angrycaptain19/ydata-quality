@@ -21,22 +21,22 @@ from .warnings import Priority, QualityWarning, WarningStyling
 # pylint: disable=too-many-locals
 class DataQuality:
     "DataQuality contains the multiple data quality engines."
-
+    # pylint: disable=too-many-arguments
     def __init__(self,
                  df: DataFrame,
                  label: str = None,
                  random_state: Optional[int] = None,
-                 entities: List[Union[str, List[str]]] = [],
+                 entities: Optional[List[Union[str, List[str]]]] = None,
                  is_close: bool = False,
-                 ed_extensions: Optional[list] = [],
+                 ed_extensions: Optional[list] = None,
                  sample: Optional[DataFrame] = None,
                  model: Callable = None,
                  results_json_path: str = None,
                  error_tol: int = 0,
                  rel_error_tol: Optional[float] = None,
                  minimum_coverage: Optional[float] = 0.75,
-                 sensitive_features: List[str] = [],
-                 dtypes: Optional[dict] = {},
+                 sensitive_features: Optional[List[str]] = None,
+                 dtypes: Optional[dict] = None,
                  corr_th: float = 0.8,
                  vif_th: float = 5,
                  p_th: float = 0.05,
@@ -82,6 +82,11 @@ class DataQuality:
             severity (str): Sets the logger warning threshold.
                 Valid levels are: [DEBUG, INFO, WARNING, ERROR, CRITICAL]
         """
+        entities = [] if entities is None else entities
+        ed_extensions = [] if ed_extensions is None else ed_extensions
+        sensitive_features = [] if sensitive_features is None else sensitive_features
+        dtypes = {} if dtypes is None else dtypes
+
         self.df = df
         self._warnings = []
         self._logger = get_logger(NAME, level=severity)

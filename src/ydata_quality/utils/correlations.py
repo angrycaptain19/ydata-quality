@@ -92,6 +92,7 @@ def correlation_ratio(col1: np.ndarray, col2: np.ndarray) -> float:
     return np.sqrt(eta_2)  # Note: this is strictly positive
 
 
+# pylint: disable=too-many-locals
 def correlation_matrix(df: DataFrame, dtypes: dict, drop_dups: bool = False) -> DataFrame:
     """Returns the correlation matrix.
     The methods used for computing correlations are mapped according to the column dtypes of each pair."""
@@ -177,6 +178,7 @@ def vif_collinearity(data: DataFrame, dtypes: dict, label: str = None) -> Series
     return Series(data=vifs, index=num_columns).sort_values(ascending=False)
 
 
+# pylint: disable=too-many-locals
 def chi2_collinearity(data: DataFrame, dtypes: dict, p_th: float, label: str = None) -> DataFrame:
     """Applies chi-squared test on all combinations of categorical variable pairs in a dataset.
     Disregards the label feature.

@@ -16,7 +16,7 @@ from .warnings import Priority, QualityWarning, WarningStyling
 # pylint: disable=too-many-instance-attributes
 class QualityEngine(ABC):
     "Main class for running and storing data quality analysis."
-
+    # pylint: disable=too-many-arguments
     def __init__(self,
                  df: DataFrame,
                  random_state: Optional[int] = None,
@@ -45,7 +45,7 @@ class QualityEngine(ABC):
     @label.setter
     def label(self, label: str):
         assert isinstance(label, str), "Property 'label' should be a string."
-        assert label in self.df.columns, "Provided label %s does not exist as a DataFrame column." % label
+        assert label in self.df.columns, f"Provided label {label} does not exist as a DataFrame column."
         self._label = label
 
     @property
@@ -163,7 +163,7 @@ class QualityEngine(ABC):
             except Exception as exc:  # print a Warning and log the message
                 self._logger.warning('Skipping %s due to failure during computation. \
 See results folder of this test for further details.', test)
-                results[test] = "[ERROR] Test failed to compute. Original exception: "+f"{exc}"
+                results[test] = "[ERROR] Test failed to compute. Original exception: " + f"{exc}"
 
         if summary:
             self._report()

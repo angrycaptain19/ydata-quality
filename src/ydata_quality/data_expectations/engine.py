@@ -124,9 +124,8 @@ bound of the expected range."
                 QualityWarning(
                     test='Coverage Fraction', category='Data Expectations', priority=2,
                     data={'Columns not covered': df_column_set.difference(column_coverage)},
-                    description="The provided DataFrame has a total expectation coverage of {:.0%} of its \
-columns, which is below the expected coverage of {:.0%}.".format(
-                        coverage_fraction, minimum_coverage)
+                    description=f"The provided DataFrame has a total expectation coverage of {coverage_fraction:.0%} \
+of its columns, which is below the expected coverage of {minimum_coverage:.0%}."
                 )
             )
         return len(column_coverage) / len(df_column_set)
@@ -150,9 +149,8 @@ columns, which is below the expected coverage of {:.0%}.".format(
                 QualityWarning(
                     test='Overall Assessment', category='Data Expectations', priority=2,
                     data={'Failed expectation indexes': failed_expectation_ids},
-                    description="{} expectations have failed, which is more than the implied absolute threshold of {} \
-failed expectations.".format(
-                        len(failed_expectation_ids), int(error_tol))
+                    description=f"{len(failed_expectation_ids)} expectations have failed, which is more than the \
+implied absolute threshold of {int(error_tol)} failed expectations."
                 )
             )
         return failed_expectation_ids
@@ -182,6 +180,7 @@ failed expectations.".format(
             expectation_level_report.iloc[idx_] = [expectation_type, result, error_metric]
         return (expectation_level_report, {idx: expectations_summary[idx] for idx in expectation_level_report.index})
 
+    # pylint: disable=too-many-arguments, arguments-differ
     def evaluate(self, results_json_path: str, df: DataFrame = None, error_tol: int = 0,
                  rel_error_tol: Optional[float] = None, minimum_coverage: Optional[float] = 0.75,
                  summary: bool = True) -> dict:

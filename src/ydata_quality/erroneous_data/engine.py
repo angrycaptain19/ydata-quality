@@ -13,7 +13,7 @@ from ..utils.enum import DataFrameType
 class ErroneousDataIdentifier(QualityEngine):
     "Engine for running analysis on erroneous data."
 
-    def __init__(self, df: DataFrame, ed_extensions: Optional[list] = [], severity: Optional[str] = None):
+    def __init__(self, df: DataFrame, ed_extensions: Optional[list] = None, severity: Optional[str] = None):
         """
         Args:
             df (DataFrame): DataFrame used to run the erroneous data analysis.
@@ -29,7 +29,7 @@ class ErroneousDataIdentifier(QualityEngine):
         self._default_ed = None
         self._flatline_index = {}
         self.__default_index_name = '__index'
-        self.err_data = ed_extensions
+        self.err_data = [] if ed_extensions is None else ed_extensions
 
     @property
     def default_err_data(self):
@@ -49,9 +49,10 @@ class ErroneousDataIdentifier(QualityEngine):
         return self._edv
 
     @err_data.setter
-    def err_data(self, err_data_extensions: Optional[list] = []):
+    def err_data(self, err_data_extensions: Optional[list] = None):
         """Allows extending default erroneous data values list, append only.
         ED values of string type are case insensitive during search."""
+        err_data_extensions = [] if err_data_extensions is None else err_data_extensions
         assert isinstance(err_data_extensions, list), "Erroneous data value extensions must be passed as a list."
         self._edv = self.default_err_data.union(
             set(edv.lower() if isinstance(edv, str) else edv for edv in err_data_extensions))
@@ -81,13 +82,14 @@ class ErroneousDataIdentifier(QualityEngine):
             self._flatline_index[column_name] = flts  # Cache the index
         return flts.loc[flts['length'] >= th]
 
-    def flatlines(self, th: int = 5, skip: list = []):
+    def flatlines(self, th: int = 5, skip: Optional[list] = None):
         """Iterates the dataset over columns and requests flatline indexes based on arguments.
         Raises warning indicating columns with flatline events and total flatline events in the dataframe.
         Arguments:
             th: Defines the minimum length required for a flatline event to be reported.
             skip: List of columns that will not be target of search for flatlines.
                 Pass '__index' inside skip list to skip looking for flatlines at the index."""
+        skip = [] if skip is None else skip
         if self.df_type == DataFrameType.TABULAR:
             self._logger.debug('The provided DataFrame is not a valid Timeseries type, skipping flatlines test.')
             return None
@@ -111,7 +113,7 @@ with a minimun length of {th:.0f} among the columns {set(flatlines.keys())}."))
 
         return None
 
-    def predefined_erroneous_data(self, skip: list = [], short: bool = True):
+    def predefined_erroneous_data(self, skip: Optional[list] = None, short: bool = True):
         """Runs a check against a list of predefined erroneous data values.
         Will always use the extended list if user provided any extension to the defaults.
         Raises warning based on the existence of these values.
@@ -121,6 +123,7 @@ with a minimun length of {th:.0f} among the columns {set(flatlines.keys())}."))
             skip: List of columns that will not be target of search for predefined ED.
                 Pass '__index' in skip to skip looking for flatlines at the index.
             short: Instruct engine to return only for ED values and columns where ED were detected"""
+        skip = [] if skip is None else skip
         df = self.df.copy()  # Index will not be covered in column iteration
         df[self.__default_index_name] = df.index  # Index now in columns to be processed
         check_cols = set(df.columns).difference(set(skip))

@@ -66,7 +66,7 @@ class DriftAnalyser(QualityEngine):
         sample_label_drift: detects label drift in the test sample, measured against the full reference sample.
         sample_concept_drift: detects concept drift in the test sample based on a wrapped model provided by the user.
     """
-
+    # pylint: disable=too-many-arguments
     def __init__(self, ref: DataFrame, sample: Optional[DataFrame] = None, label: Optional[str] = None,
                  model: Optional[Union[Callable, ModelWrapper]] = None, holdout: float = 0.2,
                  random_state: Optional[int] = None, severity: Optional[str] = None):
@@ -137,7 +137,7 @@ class DriftAnalyser(QualityEngine):
         if self.label:
             test_x = self.df.head().copy()
             test_x.drop(self.label, axis=1, inplace=True)
-            output = self.model(test_x)
+            output = self.model(test_x)  # pylint: disable=not-callable
             assert isinstance(output, (Series, np.ndarray)), "The provided model didn't produce the expected output."
             assert len(
                 output) == test_x.shape[0], "The provided model didn't produce output with the expected dimensions."
@@ -185,6 +185,7 @@ with expected count below 5 (this sample is too small for chi-squared test)"
             statistic_value, p_value = -1, None
         return statistic_value, p_value, test_name
 
+    # pylint: disable=too-many-locals
     def ref_covariate_drift(self, p_thresh: float = 0.05, plot: bool = False) -> DataFrame:
         """Controls covariate drift in reference subsamples.
         The controlled metric is the number of features with no drift detection.
@@ -349,8 +350,8 @@ Test skipped."
         test_sample = self.sample.copy()
         ref_sample.drop(self.label, axis=1, inplace=True)
         test_sample.drop(self.label, axis=1, inplace=True)
-        ref_preds = Series(self.model(ref_sample), name=self.label)
-        test_preds = Series(self.model(test_sample), name=self.label)
+        ref_preds = Series(self.model(ref_sample), name=self.label)    # pylint: disable=not-callable
+        test_preds = Series(self.model(test_sample), name=self.label)  # pylint: disable=not-callable
         stat_val, p_val, test_name = self._2sample_feat_good_fit(ref_sample=ref_preds,
                                                                  test_sample=test_preds)
         test_summary = Series(data=[test_name, stat_val, p_val, None],

@@ -1,7 +1,7 @@
 """
 Utilities based on building baseline machine learning models.
 """
-from typing import Union
+from typing import Union, Optional
 
 import numpy as np
 import pandas as pd
@@ -192,7 +192,7 @@ def predict_missingness(df: pd.DataFrame, feature: str):
     return roc_auc_score(y_test, y_pred)
 
 
-def standard_transform(df, dtypes, skip=[], robust=False):
+def standard_transform(df, dtypes, skip: Optional[list] = None, robust=False):
     """Applies standard transformation to the dataset (imputation, centering and scaling), returns transformed data
     and the fitted transformer.
     Numerical data is imputed with mean, centered and scaled by 4 standard deviations.
@@ -201,6 +201,7 @@ def standard_transform(df, dtypes, skip=[], robust=False):
     [1]From 1997 Wilson, D. Randall; Martinez, Tony R. -
         Improved Heterogeneous Distance Functions https://arxiv.org/pdf/cs/9701101.pdf
     """
+    skip = [] if skip is None else skip
     numerical_features = [key for key, value in dtypes.items() if value == 'numerical' and key not in skip]
     categorical_features = [key for key, value in dtypes.items() if value == 'categorical' and key not in skip]
     assert len(numerical_features + categorical_features +

@@ -96,10 +96,11 @@ def drop_column_list(df: pd.DataFrame, column_list: dict):
             df.drop(columns=dup_list, index=dup_list, inplace=True)
 
 
-def infer_dtypes(df: Union[pd.DataFrame, pd.Series], skip: Union[list, set] = []):
+def infer_dtypes(df: Union[pd.DataFrame, pd.Series], skip: Optional[Union[list, set]] = None):
     """Simple inference method to return a dictionary with list of numeric_features and categorical_features
     Note: The objective is not to substitute the need for passed dtypes but rather to provide expedite inferal between
     numerical or categorical features"""
+    skip = [] if skip is None else skip
     infer = pd.api.types.infer_dtype
     dtypes = {}
     as_categorical = ['string',

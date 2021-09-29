@@ -58,6 +58,7 @@ class DataRelationsDetector(QualityEngine):
                 dtypes[col] = dtype
         self._dtypes = dtypes
 
+    # pylint: disable=too-many-arguments, arguments-differ
     def evaluate(self, df: DataFrame, dtypes: Optional[dict] = None, label: str = None, corr_th: float = 0.8,
                  vif_th: float = 5, p_th: float = 0.05, plot: bool = True, summary: bool = True) -> dict:
         """Runs tests to the validation run results and reports based on found errors.
@@ -173,6 +174,7 @@ You might want to try lowering corr_th."
             summary.sort_values(by='Correlations', ascending=False, inplace=True, key=abs)
         return summary
 
+    # pylint: disable=too-many-arguments
     def _high_collinearity_detection(self, df: DataFrame, dtypes: dict, label: str = None,
                                      vif_th: float = 10., p_th: float = 0.05) -> DataFrame:
         """Detects independent variables with high collinearity.
@@ -181,6 +183,7 @@ You might want to try lowering corr_th."
         Chi-squared tests are used to test categorical vars collinearity.
         Results are ranked from highest collinearity to lowest and segregated on type of variable.
         """
+        # TODO: Substitute dtypes to use class property
         vif_scores = vif_collinearity(df, dtypes, label)
         inflated = vif_scores.loc[vif_scores > vif_th]
         chi2_tests = chi2_collinearity(df, dtypes, p_th, label)

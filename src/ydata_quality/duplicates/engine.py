@@ -15,7 +15,7 @@ class DuplicateChecker(QualityEngine):
 
     def __init__(self,
                  df: DataFrame,
-                 entities: List[Union[str, List[str]]] = [],
+                 entities: List[Union[str, List[str]]] = None,
                  is_close: bool = False,
                  severity: Optional[str] = None):
         """
@@ -27,7 +27,7 @@ class DuplicateChecker(QualityEngine):
             severity (str): Sets the logger warning threshold.
                 Valid levels are [DEBUG, INFO, WARNING, ERROR, CRITICAL]."""
         super().__init__(df=df, severity=severity)
-        self._entities = entities
+        self._entities = [] if entities is None else entities
         self._tests = ["exact_duplicates", "entity_duplicates", "duplicate_columns"]
         self._is_close = is_close
 

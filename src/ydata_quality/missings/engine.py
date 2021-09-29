@@ -140,10 +140,8 @@ class MissingsProfiler(QualityEngine):
         # Parse the columns for which to calculate the missingness performance
         cols = self._get_null_cols(col)
         # Calculate the performance for each feature
-        results = Series(
-                    {c: predict_missingness(df=self.df, feature=c) for c in cols},
-                    name='predict_missings', dtype=object
-                )
+        results = Series({c: predict_missingness(df=self.df, feature=c) for c in cols},
+                         name='predict_missings', dtype=object)
 
         # Subset for performances above threshold
         high_perfs = results[results > th]
