@@ -49,6 +49,7 @@ class BiasFairness(QualityEngine):
         subsequent bias in the data pipeline. High association values indicate that alternative features can
         be used in place of the original sensitive attributes.
         """
+        # TODO: multiple thresholds per association type (num/num, num/cat, cat/cat)
 
         # Compute association measures for sensitive features
         corrs = compute_associations(self.df, num_num_assoc='pearson', nom_nom_assoc='cramer')
@@ -92,6 +93,7 @@ class BiasFairness(QualityEngine):
         Get the performance of a baseline model for each feature value of a sensitive attribute.
         High disparities in the performance metrics indicate that the model may not be fair across sensitive attributes.
         """
+        # TODO: support error rate parity metrics (e.g. false positive rate, positive rate)
         if self.label is None:
             self._logger.warning(
                 'Argument "label" must be defined to calculate performance discrimination metric. Skipping test.')
@@ -107,6 +109,7 @@ class BiasFairness(QualityEngine):
         Raises a warning if a feature value of a categorical sensitive attribute is not represented above a min_pct \
 percentage.
         """
+        # TODO: Representativity for numerical features
         res = {}
         categorical_sensitives = [
             k for (

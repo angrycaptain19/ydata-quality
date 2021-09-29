@@ -199,6 +199,8 @@ You might want to try lowering corr_th."
 These will make model explainability harder and potentially give way to issues like overfitting.\
 Depending on your end goal you might want to remove the highest VIF variables."""))
         if len(cat_coll_scores) > 0:
+            # TODO: Merge warning messages (make one warning for the whole test,
+            # summarizing findings from the numerical and categorical vars)
             self.store_warning(QualityWarning(
                 test='High Collinearity - Categorical', category='Data Relations', priority=2, data=chi2_tests,
                 description=f"""Found {len(cat_coll_scores)} categorical variables with significant collinearity \

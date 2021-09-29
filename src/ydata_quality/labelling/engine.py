@@ -131,6 +131,7 @@ class CategoricalLabelInspector(SharedLabelInspector):
             slack: Margin for alert triggers based on label representativity.
                 Slack is linearly adjusted for n>2 classes.
         """
+        # TODO: Plot bar chart with observation counts for each class and respective thresholds
         if slack < 0 or slack > 0.5:
             raise ValueError('Slack must be part of the open interval ]0, 0.5[')
         label_counts = self._get_label_counts(dropna=True)  # No label records are not considered
@@ -168,6 +169,7 @@ class CategoricalLabelInspector(SharedLabelInspector):
         Slack defines a proportion for the record weighted average of performances as a tolerance.
         Any binary classifier that scores below the average minus tolerance triggers a warning.
         """
+        # TODO: Plot ROC curve
         assert 0 <= slack <= 1, "Argument th is expected to be a float in the [0,1] interval"
         _class_counts = self._get_label_counts(dropna=True)
         _class_counts = _class_counts[_class_counts > 1]

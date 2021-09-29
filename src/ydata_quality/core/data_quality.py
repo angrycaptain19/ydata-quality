@@ -102,6 +102,11 @@ class DataQuality:
 
         self._engines_new = {'data-relations': DataRelationsDetector(severity=severity)}
         self._eval_args = {  # Argument lists for different engines
+            # TODO: centralize shared args in a dictionary to pass just like a regular kwargs to engines,
+            # pass specific args in arg list (define here). In new standard all engines can be run at the evaluate
+            # method only, the evaluate run expression can then be:
+            # results = {name: engine.evaluate(*self._eval_args.get(name,[]), **shared_args)
+            # for name, engine in self.engines.items()}
             'expectations': [results_json_path, df, error_tol, rel_error_tol, minimum_coverage],
             'data-relations': [df, dtypes, label, corr_th, vif_th, p_th, plot]
         }
