@@ -88,7 +88,9 @@ def correlation_ratio(col1: np.ndarray, col2: np.ndarray) -> float:
         counts[count] = y_x.size
         y_x_hat[count] = np.average(y_x)
     y_hat = np.average(y_x_hat, weights=counts)
-    eta_2 = np.sum(np.multiply(counts, np.square(np.subtract(y_x_hat, y_hat)))) / np.sum(np.square(np.subtract(col2, y_hat)))  # noqa
+    eta_2 = np.sum(
+        np.multiply(counts,
+                    np.square(np.subtract(y_x_hat, y_hat)))) / np.sum(np.square(np.subtract(col2, y_hat)))
     return np.sqrt(eta_2)  # Note: this is strictly positive
 
 
