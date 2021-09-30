@@ -35,8 +35,11 @@ class ErroneousDataIdentifier(QualityEngine):
         """Returns the default list of erroneous data values.
         ED values of string type are case insensitive during search."""
         if self._default_ed is None:
-            self._default_ed = set([edv.lower() if isinstance(edv, str) else edv for edv in [
-                                   "?", "UNK", "Unknown", "N/A", "NA", "", "(blank)"]])
+            self._default_ed = {
+                edv.lower() if isinstance(edv, str) else edv
+                for edv in ["?", "UNK", "Unknown", "N/A", "NA", "", "(blank)"]
+            }
+
         return self._default_ed
 
     @property
@@ -53,7 +56,11 @@ class ErroneousDataIdentifier(QualityEngine):
         ED values of string type are case insensitive during search."""
         assert isinstance(err_data_extensions, list), "Erroneous data value extensions must be passed as a list."
         self._edv = self.default_err_data.union(
-            set([edv.lower() if isinstance(edv, str) else edv for edv in err_data_extensions]))
+            {
+                edv.lower() if isinstance(edv, str) else edv
+                for edv in err_data_extensions
+            }
+        )
 
     def __get_flatline_index(self, column_name: str, th: Optional[int] = 1):
         """Returns an index for flatline events on a passed column.
@@ -97,8 +104,8 @@ class ErroneousDataIdentifier(QualityEngine):
             flts = self.__get_flatline_index(column, th)
             if len(flts) > 0:
                 flatlines[column] = flts
-        if len(flatlines) > 0:  # Flatlines detected
-            total_flatlines = sum([flts.shape[0] for flts in flatlines.values()])
+        if flatlines:  # Flatlines detected
+            total_flatlines = sum(flts.shape[0] for flts in flatlines.values())
             self.store_warning(
                 QualityWarning(
                     test='Flatlines', category='Erroneous Data', priority=2, data=flatlines,
@@ -106,7 +113,7 @@ class ErroneousDataIdentifier(QualityEngine):
                         with a minimun length of {th:.0f} among the columns {set(flatlines.keys())}."
             ))
             return flatlines
-        
+
         self._logger.info(f"No flatline events with a minimum length of {th:.0f} were found.")
 
         return None

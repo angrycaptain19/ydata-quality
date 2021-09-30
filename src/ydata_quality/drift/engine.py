@@ -115,10 +115,7 @@ class DriftAnalyser(QualityEngine):
     @model.setter
     def model(self, model: Callable):
         if model:
-            if isinstance(model, ModelWrapper):
-                self._model = model
-            else:
-                self._model = ModelWrapper(model)
+            self._model = model if isinstance(model, ModelWrapper) else ModelWrapper(model)
             try:
                 self.__test_model()
             except BaseException:

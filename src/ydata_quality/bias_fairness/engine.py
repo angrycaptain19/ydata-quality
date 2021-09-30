@@ -97,10 +97,14 @@ class BiasFairness(QualityEngine):
             self._logger.warning(
                 'Argument "label" must be defined to calculate performance discrimination metric. Skipping test.')
 
-        res = {}
-        for feat in self.sensitive_features:
-            res[feat] = pd.Series(performance_per_feature_values(df=self.df, feature=feat, label=self.label))
-        return res
+        return {
+            feat: pd.Series(
+                performance_per_feature_values(
+                    df=self.df, feature=feat, label=self.label
+                )
+            )
+            for feat in self.sensitive_features
+        }
 
     def sensitive_representativity(self, min_pct: float = 0.01):
         """Checks categorical sensitive attributes minimum representativity of feature values.

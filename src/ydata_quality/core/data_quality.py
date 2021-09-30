@@ -104,7 +104,7 @@ class DataQuality:
                                                                random_state=self.random_state, severity=severity)
         else:
             self._logger.warning('Label is not defined. Skipping LABELLING engine.')
-        if len(sensitive_features) > 0:
+        if sensitive_features:
             self._engines_legacy['bias&fairness'] = BiasFairness(df=df, sensitive_features=sensitive_features,
                                                                  label=label, random_state=self.random_state,
                                                                  severity=severity)

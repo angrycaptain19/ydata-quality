@@ -20,14 +20,12 @@ def test_load_json_path(json_path: str) -> dict:
     Returns:
         json_dict (dict): The json dictionary loaded as Python dictionary.
     """
-    if isinstance(json_path, str):
-        # pylint: disable=unspecified-encoding
-        with open(json_path, 'r') as b_stream:
-            data = b_stream.read()
-        json_dict = json.loads(data)
-    else:
+    if not isinstance(json_path, str):
         raise IOError("Expected a path to a json file.")
-    return json_dict
+    # pylint: disable=unspecified-encoding
+    with open(json_path, 'r') as b_stream:
+        data = b_stream.read()
+    return json.loads(data)
 
 
 def random_split(df: Union[pd.DataFrame, pd.Series], split_size: float,
@@ -118,9 +116,7 @@ def infer_dtypes(df: Union[pd.DataFrame, pd.Series], skip: Union[list, set] = []
 
 def check_time_index(index: pd.Index) -> bool:
     """Tries to infer from passed index column if the dataframe is a timeseries or not."""
-    if isinstance(index, (pd.DatetimeIndex, pd.PeriodIndex, pd.TimedeltaIndex)):
-        return True
-    return False
+    return isinstance(index, (pd.DatetimeIndex, pd.PeriodIndex, pd.TimedeltaIndex))
 
 
 def infer_df_type(df: pd.DataFrame) -> DataFrameType:
