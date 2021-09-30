@@ -61,7 +61,7 @@ class QualityEngine(ABC):
             self._logger.warning("Property 'dtypes' should be a dictionary. Defaulting to all column dtypes inference.")
             dtypes = {}
         cols_not_in_df = [col for col in dtypes if col not in self.df.columns]
-        if len(cols_not_in_df) > 0:
+        if cols_not_in_df:
             self._logger.warning("Passed dtypes keys %s are not columns of the provided dataset.", cols_not_in_df)
         supported_dtypes = ['numerical', 'categorical']
         wrong_dtypes = [col for col, dtype in dtypes.items() if dtype not in supported_dtypes]

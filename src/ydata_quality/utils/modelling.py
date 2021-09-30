@@ -96,12 +96,11 @@ def baseline_performance(df: pd.DataFrame, label: str,
     # 2. Get the baseline predictions
     y_pred, _, y_test = baseline_predictions(df=df, label=label, task=task)
 
-    # 3. Get the performance
-    if adjusted_metric:
-        perf = adjusted_performance(y_test, y_pred, task=task, metric=metric)
-    else:
-        perf = metric(y_test, y_pred)
-    return perf
+    return (
+        adjusted_performance(y_test, y_pred, task=task, metric=metric)
+        if adjusted_metric
+        else metric(y_test, y_pred)
+    )
 
 
 def adjusted_performance(y_true, y_pred, task: PredictionTask, metric: callable):
@@ -161,8 +160,7 @@ def performance_per_missing_value(df: pd.DataFrame, feature: str, label: str, ta
 
     # 3. Get the performance per valued vs missing feature
     missing_mask = x_test[feature].isna()
-    results = {}
-    results['missing'] = metric(y_test[missing_mask], y_pred[missing_mask])
+    results = {'missing': metric(y_test[missing_mask], y_pred[missing_mask])}
     results['valued'] = metric(y_test[~missing_mask], y_pred[~missing_mask])
     return results
 
@@ -250,7 +248,7 @@ def estimate_centroid(df: pd.DataFrame, dtypes: dict = None):
     """Makes a centroid estimation for a given dataframe.
     Will use provided dtypes or infer in order to use best statistic columnwise"""
     if dtypes:
-        if not all([col in dtypes for col in df.columns]):
+        if any(col not in dtypes for col in df.columns):
             dtypes = dtypes.update(infer_dtypes(df, skip=dtypes.columns))
     else:
         dtypes = infer_dtypes(df)
@@ -283,7 +281,7 @@ def estimate_sd(sample: pd.DataFrame, reference=None, dtypes=None):
         std_distances: the distances of the sample points to the reference point scaled by std_dev
     """
     if dtypes:  # Ensure dtypes are compatible with sample
-        if not all([col in dtypes for col in sample.columns]):
+        if any(col not in dtypes for col in sample.columns):
             dtypes = dtypes.update(infer_dtypes(sample, skip=dtypes.columns))
     else:
         dtypes = infer_dtypes(sample)

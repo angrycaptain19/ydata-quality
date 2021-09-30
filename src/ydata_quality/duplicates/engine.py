@@ -46,8 +46,8 @@ class DuplicateChecker(QualityEngine):
     @staticmethod
     def __unique_entities(entities: List[Union[str, List[str]]]):
         """Returns entities list with only unique entities"""
-        entities = set([entity if isinstance(entity, str) else entity[0] if len(
-            entity) == 1 else tuple(entity) for entity in entities])
+        entities = {entity if isinstance(entity, str) else entity[0] if len(
+            entity) == 1 else tuple(entity) for entity in entities}
         return [entity if isinstance(entity, str) else list(entity) for entity in entities]
 
     @staticmethod

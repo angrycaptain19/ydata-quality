@@ -43,11 +43,11 @@ class DataRelationsDetector(QualityEngine):
             self._logger.warning("Property 'dtypes' should be a dictionary. Defaulting to all column dtypes inference.")
             dtypes = {}
         cols_not_in_df = [col for col in dtypes if col not in df.columns]
-        if len(cols_not_in_df) > 0:
+        if cols_not_in_df:
             self._logger.warning("Passed dtypes keys %s are not columns of the provided dataset.", cols_not_in_df)
         supported_dtypes = ['numerical', 'categorical']
         wrong_dtypes = [col for col, dtype in dtypes.items() if dtype not in supported_dtypes]
-        if len(wrong_dtypes) > 0:
+        if wrong_dtypes:
             self._logger.warning(
                 f"Columns {wrong_dtypes} of dtypes where not defined with a supported dtype and will be inferred.")
         dtypes = {key: val for key, val in dtypes.items() if key not in cols_not_in_df + wrong_dtypes}
@@ -114,7 +114,7 @@ class DataRelationsDetector(QualityEngine):
         mask[corr_mat.abs() <= corr_th] = False  # Drop pairs with zero order correlation below threshold
         mask[par_corr_mat.abs() > corr_th] = False  # Drop pairs with correlation after controling all other covariates
         confounded_pairs = [(corr_mat.index[i], corr_mat.columns[j]) for i, j in np.argwhere(mask)]
-        if len(confounded_pairs) > 0:
+        if confounded_pairs:
             self.store_warning(QualityWarning(
                 test='Confounded correlations', category='Data Relations', priority=2, data=confounded_pairs,
                 description=f"""
@@ -134,7 +134,7 @@ class DataRelationsDetector(QualityEngine):
         mask[corr_mat.abs() > corr_th] = False  # Drop pairs with zero order correlation above threshold
         mask[par_corr_mat.abs() <= corr_th] = False  # Drop pairs with correlation after controling all other covariates
         colliding_pairs = [(corr_mat.index[i], corr_mat.columns[j]) for i, j in np.argwhere(mask)]
-        if len(colliding_pairs) > 0:
+        if colliding_pairs:
             self.store_warning(QualityWarning(
                 test='Collider correlations', category='Data Relations', priority=2, data=colliding_pairs,
                 description="Found {} independently uncorrelated variable pairs that showed correlation after\
@@ -156,7 +156,7 @@ class DataRelationsDetector(QualityEngine):
         important_feats = [label_corrs.index[i][0] for i in np.argwhere(mask)]
         summary = "[FEATURE IMPORTANCE] No important features were found in explaining {}. You might want to try lowering corr_th.".format(
             label)
-        if len(important_feats) > 0:
+        if important_feats:
             if par_corr_mat is not None:
                 label_pcorrs = par_corr_mat.loc[label].drop(label)
                 summary = DataFrame(
@@ -191,7 +191,7 @@ class DataRelationsDetector(QualityEngine):
 (VIF>{vif_th:.1f}). The variables listed in results are highly collinear with other variables in the dataset. \
 These will make model explainability harder and potentially give way to issues like overfitting.\
 Depending on your end goal you might want to remove the highest VIF variables."""))
-        if len(cat_coll_scores) > 0:
+        if cat_coll_scores:
             # TODO: Merge warning messages (make one warning for the whole test,
             # summarizing findings from the numerical and categorical vars)
             self.store_warning(QualityWarning(

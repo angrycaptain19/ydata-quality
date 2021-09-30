@@ -112,7 +112,7 @@ def correlation_matrix(df: DataFrame, dtypes: dict, drop_dups: bool = False) -> 
                 continue  # Diagonal was filled from the start, lower triangle is equal to top triangle
             dtype2 = dtypes[col2]
             dtype_sorted_ixs = sorted(list(zip([i, j], [dtype1, dtype2])), key=lambda x: x[1])
-            key = tuple([col_dtype[1] for col_dtype in dtype_sorted_ixs])
+            key = tuple(col_dtype[1] for col_dtype in dtype_sorted_ixs)
             is_valid = has_values[:, i] & has_values[:, j]  # Valid indexes for computation
             try:
                 vals = [df[is_valid, col_dtype[0]] for col_dtype in dtype_sorted_ixs]

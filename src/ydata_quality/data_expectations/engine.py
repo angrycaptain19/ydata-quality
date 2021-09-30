@@ -92,8 +92,13 @@ class DataExpectationsReporter(QualityEngine):
 
         overall_results = {
             'expectation_count': len(results_summary["EXPECTATIONS"]),
-            'total_successes': sum([True for summary in results_summary["EXPECTATIONS"].values() if summary['success']])
+            'total_successes': sum(
+                True
+                for summary in results_summary["EXPECTATIONS"].values()
+                if summary['success']
+            ),
         }
+
         overall_results["success_rate"] = overall_results["total_successes"] / overall_results["expectation_count"]
         results_summary['OVERALL'] = overall_results
         return results_summary
@@ -176,10 +181,12 @@ failed expectations.".format(
             error_metric = None
             result = expectation_summary["success"]
             expectation_type = expectation_summary["type"]
-            if result is False:
-                # Expectation specific rules are called here
-                if "between" in expectation_type and "quantile" not in expectation_type:
-                    error_metric = self.__between_value_error(expectation_summary)
+            if (
+                result is False
+                and "between" in expectation_type
+                and "quantile" not in expectation_type
+            ):
+                error_metric = self.__between_value_error(expectation_summary)
             expectation_level_report.iloc[idx_] = [expectation_type, result, error_metric]
         return (expectation_level_report, {idx: expectations_summary[idx] for idx in expectation_level_report.index})
 

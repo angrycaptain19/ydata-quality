@@ -148,9 +148,7 @@ class CategoricalLabelInspector(SharedLabelInspector):
         data = {}
         if len(label_excess) != 0:
             for _class, excess in label_excess.items():
-                folder = 'Under-represented'  # By default
-                if excess > 0:
-                    folder = 'Over-represented'
+                folder = 'Over-represented' if excess > 0 else 'Under-represented'
                 data.setdefault(folder, {})[_class] = self.df[self.df[self.label] == _class]
             self.store_warning(
                 QualityWarning(
@@ -182,11 +180,14 @@ class CategoricalLabelInspector(SharedLabelInspector):
                                             _class=_class, dtypes=self.dtypes)
             for _class in _class_counts.index
         }
-        record_weighted_avg = sum([perf * _class_counts[_class] for _class, perf in results.items()])
+        record_weighted_avg = sum(
+            perf * _class_counts[_class] for _class, perf in results.items()
+        )
+
         record_weighted_avg = (1 / _class_counts.sum()) * record_weighted_avg
         threshold = (1 - slack) * record_weighted_avg
         poor_performers = {_class: perf for _class, perf in results.items() if perf < threshold}
-        if len(poor_performers) > 0:
+        if poor_performers:
             self.store_warning(
                 QualityWarning(
                     test='One vs Rest Performance', category='Labels', priority=2,
@@ -294,8 +295,12 @@ class NumericalLabelInspector(SharedLabelInspector):
                 cluster_outliers = self.df.loc[abs_deviations[abs_deviations > th].index]
                 if len(cluster_outliers) > 0:
                     potential_outliers[cluster] = cluster_outliers
-        if len(potential_outliers) > 0:
-            total_outliers = sum([cluster_outliers.shape[0] for cluster_outliers in potential_outliers.values()])
+        if potential_outliers:
+            total_outliers = sum(
+                cluster_outliers.shape[0]
+                for cluster_outliers in potential_outliers.values()
+            )
+
             coverage_string = "{} clusters".format(len(clusters)) if use_clusters else "the full dataset"
             self.store_warning(
                 QualityWarning(
